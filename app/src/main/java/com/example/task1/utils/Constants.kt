@@ -1,4 +1,4 @@
-package com.example.task1
+package com.example.task1.utils
 class Constants  {
     companion object{
         const val MOVIE_KEY = "movie"

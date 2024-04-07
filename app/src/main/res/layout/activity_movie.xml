@@ -10,7 +10,7 @@
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:context=".MovieActivity">
+        tools:context=".ui.movieDetails.MovieActivity">
 
         <ImageView
             android:id="@+id/movieImg"

@@ -1,6 +1,7 @@
-package com.example.task1
+package com.example.task1.network
 
 
+import com.example.task1.model.Movie
 import retrofit2.Call
 import retrofit2.http.GET
 

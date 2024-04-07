@@ -1,9 +1,11 @@
-package com.example.task1
+package com.example.task1.ui.home
 
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.task1.model.Movie
+import com.example.task1.network.ApiClient
 import retrofit2.Call
 import retrofit2.Callback
 

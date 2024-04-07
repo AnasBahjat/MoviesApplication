@@ -1,4 +1,4 @@
-package com.example.task1
+package com.example.task1.ui.home
 
 
 import android.os.Bundle
@@ -8,7 +8,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.example.task1.utils.Constants
+import com.example.task1.model.Movie
+import com.example.task1.R
+import com.example.task1.utils.SharedPrefManager
 import com.example.task1.databinding.HomeScreenBinding
+import com.example.task1.ui.bookmark.BookmarkedMoviesFragment
 
 class HomeActivity : AppCompatActivity() {
     private var moviesList = mutableListOf<Movie>()
@@ -28,19 +33,26 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun initialize(){
+        viewModel = ViewModelProvider(this)[MyViewModel::class.java]
         wrapViews()
+        fetchMovies()
+        setupBottomNavigation()
+    }
 
+    private fun fetchMovies(){
         viewModel.readDataFromAPI()
         viewModel.returnApiData().observe(this, Observer{ allMovies ->
             moviesList=allMovies
             loadFragment(HomeFragment())
         })
+    }
 
+    private fun setupBottomNavigation(){
         binding.bottomNav.setOnItemSelectedListener {
             when(it.itemId){
                 R.id.homeMovies -> {
                     loadFragment(HomeFragment())
-                true}
+                    true}
                 R.id.bookmarkMovies ->{
                     loadFragment(BookmarkedMoviesFragment())
                     binding.progressBar.visibility=View.GONE
@@ -59,7 +71,6 @@ class HomeActivity : AppCompatActivity() {
         sharedPreferences = SharedPrefManager(this)
         binding.progressBar.visibility=View.VISIBLE
         binding.bottomNav.menu.getItem(1).isEnabled = false
-        viewModel = ViewModelProvider(this)[MyViewModel::class.java]
     }
 
 

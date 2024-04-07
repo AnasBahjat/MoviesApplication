@@ -1,4 +1,4 @@
-package com.example.task1
+package com.example.task1.network
 
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit

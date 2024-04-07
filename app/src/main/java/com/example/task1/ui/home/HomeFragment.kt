@@ -1,4 +1,4 @@
-package com.example.task1
+package com.example.task1.ui.home
 
 import android.content.Intent
 import android.os.Build
@@ -8,25 +8,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.task1.utils.Constants
+import com.example.task1.ui.common.MovieAdapter
+import com.example.task1.model.Movie
+import com.example.task1.ui.movieDetails.MovieActivity
+import com.example.task1.ui.common.MovieClicked
 import com.example.task1.databinding.HomeFragmentAllMoviesBinding
 
 
-class HomeFragment : Fragment(),MovieClicked {
+class HomeFragment : Fragment(), MovieClicked {
 
-    private lateinit var myCustomAdapter: CustomeAdapter
+    private lateinit var myCustomAdapter: MovieAdapter
     private var moviesList = mutableListOf<Movie>()
 
     private var _binding : HomeFragmentAllMoviesBinding?=null
     private val binding get()=_binding!!
-
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-
-        }
-
-    }
 
 
     override fun onCreateView(
@@ -35,11 +31,7 @@ class HomeFragment : Fragment(),MovieClicked {
     ): View {
         _binding = HomeFragmentAllMoviesBinding.inflate(inflater,container,false)
 
-        moviesList = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
-            arguments?.getParcelableArrayList(Constants.MOVIES_LIST,Movie::class.java)!!
-        } else {
-            arguments?.getParcelableArrayList(Constants.MOVIES_LIST)!!
-        }
+
         return binding.root
 
     }
@@ -47,14 +39,21 @@ class HomeFragment : Fragment(),MovieClicked {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initialize()
+        initializeRecyclerView()
     }
 
 
-    private fun initialize(){
+    private fun initializeRecyclerView(){
         binding.homeFragmentRecView.layoutManager=LinearLayoutManager(context)
+
+        moviesList = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+            arguments?.getParcelableArrayList(Constants.MOVIES_LIST, Movie::class.java)!!
+        } else {
+            arguments?.getParcelableArrayList(Constants.MOVIES_LIST)!!
+        }
+
         if(activity != null){
-            myCustomAdapter = CustomeAdapter(this@HomeFragment, requireActivity(),moviesList)
+            myCustomAdapter = MovieAdapter(this@HomeFragment, requireActivity(),moviesList)
             binding.homeFragmentRecView.adapter=myCustomAdapter
         }
 
@@ -62,7 +61,7 @@ class HomeFragment : Fragment(),MovieClicked {
 
 
     override fun onMovieClicked(movieData : Movie) {
-        val intent = Intent(context,MovieActivity::class.java)
+        val intent = Intent(context, MovieActivity::class.java)
         intent.putExtra(Constants.MOVIE_KEY,movieData)
         startActivity(intent)
     }

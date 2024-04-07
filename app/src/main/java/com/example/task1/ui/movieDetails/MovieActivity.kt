@@ -1,4 +1,4 @@
-package com.example.task1
+package com.example.task1.ui.movieDetails
 
 import android.content.Intent
 import android.os.Build
@@ -13,6 +13,10 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isEmpty
 import com.bumptech.glide.Glide
+import com.example.task1.utils.Constants
+import com.example.task1.model.Movie
+import com.example.task1.R
+import com.example.task1.utils.SharedPrefManager
 import com.example.task1.databinding.ActivityMovieBinding
 
 class MovieActivity : AppCompatActivity() {
@@ -40,7 +44,7 @@ class MovieActivity : AppCompatActivity() {
         sharedPreferences= SharedPrefManager(this)
 
         val movie = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
-            intent.getParcelableExtra(Constants.MOVIE_KEY,Movie::class.java)
+            intent.getParcelableExtra(Constants.MOVIE_KEY, Movie::class.java)
         }
         else {
             intent.getParcelableExtra(Constants.MOVIE_KEY)
@@ -95,38 +99,42 @@ class MovieActivity : AppCompatActivity() {
             if(!binding.categLayout.isEmpty()){
                 binding.categLayout.removeAllViews()
             }
-            for (x in movie.genres.indices){
-                val textView = TextView(this)
-                val layoutParams = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT
-                )
-                textView.text = movie.genres[x]
+            setupGenres(movie)
+        }
+    }
 
-                var textSize = when {
-                    movie.genres[x].length <= 8 -> 16f
-                    else -> 12f
-                }
+    private fun setupGenres(movie : Movie){
+        for (x in movie.genres.indices){
+            val textView = TextView(this)
+            val layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+            textView.text = movie.genres[x]
 
-                if(movie.genres[x].length > 13){
-                    textView.width = 350
-                    textSize=13f
-                }
-                else {
-                    textView.width = 300
-                }
-
-                layoutParams.rightMargin = 18
-
-                textView.height = 120
-                textView.textSize = textSize
-                val textColor = ContextCompat.getColor(this, R.color.textColor)
-                textView.setTextColor(textColor)
-                textView.gravity = Gravity.CENTER
-                textView.background = ContextCompat.getDrawable(this, R.drawable.custom_btn)
-                textView.layoutParams = layoutParams
-                binding.categLayout.addView(textView)
-
+            var textSize = when {
+                movie.genres[x].length <= 8 -> 16f
+                else -> 12f
             }
+
+            if(movie.genres[x].length > 13){
+                textView.width = 350
+                textSize=13f
+            }
+            else {
+                textView.width = 300
+            }
+
+            layoutParams.rightMargin = 18
+
+            textView.height = 120
+            textView.textSize = textSize
+            val textColor = ContextCompat.getColor(this, R.color.textColor)
+            textView.setTextColor(textColor)
+            textView.gravity = Gravity.CENTER
+            textView.background = ContextCompat.getDrawable(this, R.drawable.custom_btn)
+            textView.layoutParams = layoutParams
+            binding.categLayout.addView(textView)
+
         }
     }
 

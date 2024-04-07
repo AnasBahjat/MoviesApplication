@@ -1,4 +1,4 @@
-package com.example.task1
+package com.example.task1.utils
 
 import android.content.Context
 import android.content.SharedPreferences
