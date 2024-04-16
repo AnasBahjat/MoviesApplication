@@ -3,6 +3,7 @@ package com.example.task1.ui.movieDetails
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -110,6 +111,7 @@ class MovieActivity : AppCompatActivity() {
         databaseViewModel.getAllMovies().observe(this, Observer {savedMovies ->
             allSavedMovies.addAll(savedMovies)
         })
+        Log.d("$allSavedMovies","$allSavedMovies")
         for(movie in allSavedMovies){
             if(movie.id == id){
                 return true
@@ -119,7 +121,7 @@ class MovieActivity : AppCompatActivity() {
     }
 
     private fun initializeViewModel(){
-        databaseViewModel = ViewModelProvider(this)[RoomViewModel::class.java]
+        databaseViewModel = ViewModelProvider(this).get(RoomViewModel::class.java)
     }
 
     private fun wrapDataToViews(movie : Movie?){

@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.jetbrainsKotlinAndroid)
     id("kotlin-parcelize")
     id ("kotlin-kapt")
+    id ("com.google.devtools.ksp") version "1.6.21-1.0.6"
+
 }
 
 android {
@@ -68,8 +70,11 @@ dependencies {
     implementation (libs.converter.gson)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.livedata.ktx)
-    implementation(libs.androidx.room.runtime)
-    implementation (libs.androidx.room.ktx)
-    annotationProcessor (libs.androidx.room.compiler.v240beta01)
-    kapt (libs.androidx.room.compiler.v252)
+    val room_version = "2.6.1"
+    implementation("androidx.room:room-runtime:$room_version")
+    annotationProcessor("androidx.room:room-compiler:$room_version")
+    implementation("androidx.room:room-ktx:$room_version")
+    kapt("androidx.room:room-compiler:$room_version")
+    ksp("androidx.room:room-compiler:$room_version")
+
 }

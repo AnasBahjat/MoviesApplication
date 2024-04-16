@@ -23,6 +23,7 @@ recyclerview = "1.3.2"
 recyclerviewSelection = "1.1.0"
 retrofit = "2.9.0"
 roomCompilerVersion = "2.4.0-beta01"
+roomVersion = "2.3.0"
 volley = "1.2.1"
 databindingRuntime = "8.3.0"
 roomCompiler = "2.6.1"
@@ -38,6 +39,7 @@ androidx-lifecycle-viewmodel-ktx-v270 = { module = "androidx.lifecycle:lifecycle
 androidx-paging-runtime = { module = "androidx.paging:paging-runtime", version.ref = "pagingRuntime" }
 androidx-recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerview" }
 androidx-recyclerview-selection = { module = "androidx.recyclerview:recyclerview-selection", version.ref = "recyclerviewSelection" }
+androidx-room-compiler-v230 = { module = "androidx.room:room-compiler", version.ref = "roomVersion" }
 androidx-room-compiler-v240beta01 = { module = "androidx.room:room-compiler", version.ref = "roomCompilerVersion" }
 androidx-room-compiler-v252 = { module = "androidx.room:room-compiler", version.ref = "androidxRoomCompiler" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomCompiler" }
