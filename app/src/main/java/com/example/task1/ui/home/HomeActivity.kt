@@ -14,13 +14,14 @@ import com.example.task1.R
 import com.example.task1.utils.SharedPrefManager
 import com.example.task1.databinding.HomeScreenBinding
 import com.example.task1.ui.bookmark.BookmarkedMoviesFragment
+import com.example.task1.ui.home.viewModels.ApiViewModel
 
 class HomeActivity : AppCompatActivity() {
     private var moviesList = mutableListOf<Movie>()
     private lateinit var bookmarkedMoviesList : MutableList<Movie>
-    private lateinit var sharedPreferences : SharedPrefManager
+   // private lateinit var sharedPreferences : SharedPrefManager
     private lateinit var binding :  HomeScreenBinding
-    private lateinit var viewModel: MyViewModel
+    private lateinit var viewModel: ApiViewModel
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,7 +34,7 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun initialize(){
-        viewModel = ViewModelProvider(this)[MyViewModel::class.java]
+        viewModel = ViewModelProvider(this)[ApiViewModel::class.java]
         wrapViews()
         fetchMovies()
         setupBottomNavigation()
@@ -68,7 +69,7 @@ class HomeActivity : AppCompatActivity() {
 
     private fun wrapViews(){
         bookmarkedMoviesList= mutableListOf()
-        sharedPreferences = SharedPrefManager(this)
+       // sharedPreferences = SharedPrefManager(this)
         binding.progressBar.visibility=View.VISIBLE
         binding.bottomNav.menu.getItem(1).isEnabled = false
     }

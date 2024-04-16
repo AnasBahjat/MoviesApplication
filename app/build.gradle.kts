@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
     id("kotlin-parcelize")
+    id ("kotlin-kapt")
 }
 
 android {
@@ -39,8 +40,12 @@ android {
         jvmTarget = "1.8"
     }
 
+    configurations {
+        implementation.get().exclude(mapOf("group" to "org.jetbrains", "module" to "annotations"))
+    }
 
 }
+
 
 dependencies {
     implementation(libs.androidx.core.ktx)
@@ -63,4 +68,8 @@ dependencies {
     implementation (libs.converter.gson)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.livedata.ktx)
+    implementation(libs.androidx.room.runtime)
+    implementation (libs.androidx.room.ktx)
+    annotationProcessor (libs.androidx.room.compiler.v240beta01)
+    kapt (libs.androidx.room.compiler.v252)
 }

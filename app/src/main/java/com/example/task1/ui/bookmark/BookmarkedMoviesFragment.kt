@@ -9,6 +9,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.task1.utils.Constants
 import com.example.task1.ui.common.MovieAdapter
@@ -18,12 +20,15 @@ import com.example.task1.ui.common.MovieClicked
 import com.example.task1.utils.SharedPrefManager
 import com.example.task1.broadcasts.BroadcastNotifyAnUpdate
 import com.example.task1.databinding.FragmentBookmarkedMoviesBinding
+import com.example.task1.ui.home.viewModels.RoomViewModel
 
 class BookmarkedMoviesFragment : Fragment(), MovieClicked, BroadcastNotifyAnUpdate.BroadcastReceiverListener {
 
 
     private lateinit var bookmarkedMoviesList : MutableList<Movie>
-    private lateinit var sharedPreferences : SharedPrefManager
+   // private lateinit var sharedPreferences : SharedPrefManager
+
+    private lateinit var databaseViewModel : RoomViewModel
 
     private lateinit var myCustomAdapter: MovieAdapter
     private var moviesList : MutableList<Movie>? = mutableListOf<Movie>()
@@ -59,15 +64,20 @@ class BookmarkedMoviesFragment : Fragment(), MovieClicked, BroadcastNotifyAnUpda
         setMoviesListValue()
         initializeBroadcast()
         initializeRecyclerView()
-        initializeSharedPreferences()
+      //  initializeSharedPreferences()
+        initializeRoomViewModel()
         updateBookmarkList()
     }
 
-    private fun initializeSharedPreferences(){
+    private fun initializeRoomViewModel(){
+        databaseViewModel = ViewModelProvider(this)[RoomViewModel::class.java]
+    }
+
+   /* private fun initializeSharedPreferences(){
         if(context != null){
             sharedPreferences = SharedPrefManager(requireContext())
         }
-    }
+    }*/
 
     private fun setMoviesListValue(){
         moviesList = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
@@ -96,7 +106,30 @@ class BookmarkedMoviesFragment : Fragment(), MovieClicked, BroadcastNotifyAnUpda
     }
 
     private fun updateBookmarkList(){
+        databaseViewModel.getAllMovies().observe(viewLifecycleOwner, Observer {listOfMovies ->
+            bookmarkedMoviesList.clear()
+            bookmarkedMoviesList.addAll(listOfMovies)
+        })
+
+        if(bookmarkedMoviesList.isEmpty()){
+            binding.recyclerViewBookmarkedFragment.visibility=View.GONE
+            binding.emptyTextBookmarkedFragment.visibility=View.VISIBLE
+        }
+
+        else {
+            if(context != null) {
+                binding.recyclerViewBookmarkedFragment.visibility = View.VISIBLE
+                binding.emptyTextBookmarkedFragment.visibility = View.GONE
+                myCustomAdapter = MovieAdapter(this@BookmarkedMoviesFragment, requireContext(), bookmarkedMoviesList)
+                binding.recyclerViewBookmarkedFragment.adapter = myCustomAdapter
+            }
+        }
+    }
+
+   /* private fun updateBookmarkList(){
         bookmarkedMoviesList = mutableListOf()
+
+
         val moviesIDs=sharedPreferences.getIdsList()
 
         for(id in moviesIDs){
@@ -119,11 +152,10 @@ class BookmarkedMoviesFragment : Fragment(), MovieClicked, BroadcastNotifyAnUpda
                 binding.recyclerViewBookmarkedFragment.adapter = myCustomAdapter
             }
         }
-    }
+    }*/
 
 
-
-    private fun getMovieData(id : Int) : Movie?{
+  /*  private fun getMovieData(id : Int) : Movie?{
         var bookmarkedMovie: Movie? = null
         moviesList?.let{moviesList->
             for (movie in moviesList){
@@ -134,7 +166,7 @@ class BookmarkedMoviesFragment : Fragment(), MovieClicked, BroadcastNotifyAnUpda
             }
         }
         return bookmarkedMovie
-    }
+    }*/
 
 
     override fun onMovieClicked(movieData: Movie) {
@@ -144,8 +176,9 @@ class BookmarkedMoviesFragment : Fragment(), MovieClicked, BroadcastNotifyAnUpda
     }
 
 
-    private fun deleteMovie(id : Int){
+   /* private fun deleteMovie(id : Int){
         val movieToDelete=getMovieData(id)
+
         if (bookmarkedMoviesList.isNotEmpty()) {
             bookmarkedMoviesList.remove(movieToDelete)
         }
@@ -160,10 +193,10 @@ class BookmarkedMoviesFragment : Fragment(), MovieClicked, BroadcastNotifyAnUpda
             myCustomAdapter = MovieAdapter(this@BookmarkedMoviesFragment, requireContext(), bookmarkedMoviesList)
             binding.recyclerViewBookmarkedFragment.adapter = myCustomAdapter
         }
-    }
+    }*/
 
     override fun onBroadcastReceived(id : Int) {
-        deleteMovie(id)
+      //  deleteMovie(id)
         updateBookmarkList()
     }
 

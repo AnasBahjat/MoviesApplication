@@ -1,4 +1,4 @@
-package com.example.task1.ui.home
+package com.example.task1.ui.home.viewModels
 
 import android.util.Log
 import androidx.lifecycle.LiveData
@@ -9,7 +9,7 @@ import com.example.task1.network.ApiClient
 import retrofit2.Call
 import retrofit2.Callback
 
-class MyViewModel : ViewModel() {
+class ApiViewModel : ViewModel() {
 
     private var moviesList = MutableLiveData<MutableList<Movie>>()
     fun readDataFromAPI(){
