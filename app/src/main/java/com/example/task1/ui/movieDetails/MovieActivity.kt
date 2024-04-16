@@ -15,6 +15,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isEmpty
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.bumptech.glide.Glide
 import com.example.task1.utils.Constants
 import com.example.task1.model.Movie
@@ -22,13 +23,16 @@ import com.example.task1.R
 import com.example.task1.utils.SharedPrefManager
 import com.example.task1.databinding.ActivityMovieBinding
 import com.example.task1.ui.home.viewModels.RoomViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MovieActivity : AppCompatActivity() {
 
    // private lateinit var sharedPreferences : SharedPrefManager
     private lateinit var binding : ActivityMovieBinding
     private lateinit var databaseViewModel: RoomViewModel
-    private lateinit var allSavedMovies : MutableList<Movie>
+    private val allSavedMovies = mutableListOf<Movie>()
     private var movie : Movie? = null
     private  var savedFlag : Boolean = false
     private var id : Int = -1
@@ -49,7 +53,7 @@ class MovieActivity : AppCompatActivity() {
     private fun wrapViews(){
        // sharedPreferences= SharedPrefManager(this)
         initialize()
-        setMovieSavedImage()
+
 
 
 
@@ -63,20 +67,21 @@ class MovieActivity : AppCompatActivity() {
 
 
         binding.bookmarkDis.setOnClickListener {
-            if (!savedFlag) {
-                binding.bookmarkDis.setImageResource(R.drawable.filled_bookmark)
-              //  sharedPreferences.addIdToList(id)
-                movie?.let {
-                    it -> databaseViewModel.addMovie(it)
+            checkIfMovieSaved(id) {saved ->
+                binding.bookmarkDis.post{
+                    if(!saved){
+                        binding.bookmarkDis.setImageResource(R.drawable.filled_bookmark)
+                        databaseViewModel.addMovie(movie!!)
+                    }
+                    else {
+                        binding.bookmarkDis.setImageResource(R.drawable.bookmark_disabled)
+                        // sharedPreferences.removeIdFromList(id)
+                        databaseViewModel.deleteMovie(id)
+                        val deleteIntent = Intent(Constants.DELETE_MOVIE_ACTION)
+                        deleteIntent.putExtra(Constants.ID_TO_SAVE, id)
+                        sendBroadcast(deleteIntent)
+                    }
                 }
-            }
-            else {
-                binding.bookmarkDis.setImageResource(R.drawable.bookmark_disabled)
-               // sharedPreferences.removeIdFromList(id)
-                databaseViewModel.deleteMovie(id)
-                val deleteIntent = Intent(Constants.DELETE_MOVIE_ACTION)
-                deleteIntent.putExtra(Constants.ID_TO_SAVE, id)
-                sendBroadcast(deleteIntent)
             }
         }
 
@@ -84,6 +89,12 @@ class MovieActivity : AppCompatActivity() {
             finish()
         }
     }
+
+    private fun initialize(){
+        initializeViewModel()
+        setMovieSavedImage()
+    }
+
     private fun setMovieSavedImage(){
         movie = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             intent.getParcelableExtra(Constants.MOVIE_KEY, Movie::class.java)
@@ -91,33 +102,27 @@ class MovieActivity : AppCompatActivity() {
         else {
             intent.getParcelableExtra(Constants.MOVIE_KEY)
         }
-
         wrapDataToViews(movie)
-        savedFlag = checkIfMovieSaved(id)
-        if(!savedFlag){
-            binding.bookmarkDis.setImageResource(R.drawable.bookmark_disabled)
-        }
-        else {
-            binding.bookmarkDis.setImageResource(R.drawable.filled_bookmark)
-        }
-    }
-
-    private fun initialize(){
-        initializeViewModel()
-    }
-
-    private fun checkIfMovieSaved(id : Int) : Boolean{
-        allSavedMovies = mutableListOf()
-        databaseViewModel.getAllMovies().observe(this, Observer {savedMovies ->
-            allSavedMovies.addAll(savedMovies)
-        })
-        Log.d("$allSavedMovies","$allSavedMovies")
-        for(movie in allSavedMovies){
-            if(movie.id == id){
-                return true
+        checkIfMovieSaved(id){isSaved ->
+            if(!isSaved){
+                binding.bookmarkDis.setImageResource(R.drawable.bookmark_disabled)
+            }
+            else {
+                binding.bookmarkDis.setImageResource(R.drawable.filled_bookmark)
             }
         }
-        return false
+    }
+
+
+
+    private fun checkIfMovieSaved(idToCheck : Int,callback: (Boolean) -> Unit){
+        databaseViewModel.viewModelScope.launch(Dispatchers.IO){
+            val flag = withContext(Dispatchers.IO) {
+                databaseViewModel.getAllMovies().value?.any { it.id == idToCheck } ?: false
+            }
+                callback(flag)
+            }
+
     }
 
     private fun initializeViewModel(){

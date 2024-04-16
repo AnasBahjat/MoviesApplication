@@ -1,12 +1,13 @@
 package com.example.task1.database
 
 import androidx.lifecycle.LiveData
+import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import com.example.task1.model.Movie
 
 
-@androidx.room.Dao
+@Dao
 interface MovieDao {
     @Query("SELECT * FROM Movie")
     fun getAllMovies() : LiveData<List<Movie>>

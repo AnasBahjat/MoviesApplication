@@ -12,6 +12,7 @@ import retrofit2.Callback
 class ApiViewModel : ViewModel() {
 
     private var moviesList = MutableLiveData<MutableList<Movie>>()
+
     fun readDataFromAPI(){
         val call = ApiClient.apiService.getMovieById()
         call.enqueue(object : Callback<List<Movie>> {

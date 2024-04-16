@@ -5,10 +5,12 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -24,16 +26,11 @@ import com.example.task1.ui.home.viewModels.RoomViewModel
 
 class BookmarkedMoviesFragment : Fragment(), MovieClicked, BroadcastNotifyAnUpdate.BroadcastReceiverListener {
 
-
-    private lateinit var bookmarkedMoviesList : MutableList<Movie>
-   // private lateinit var sharedPreferences : SharedPrefManager
-
+    private val bookmarkedMoviesList = mutableListOf<Movie>()
     private lateinit var databaseViewModel : RoomViewModel
-
     private lateinit var myCustomAdapter: MovieAdapter
     private var moviesList : MutableList<Movie>? = mutableListOf<Movie>()
     private lateinit var broadcastReceiver : BroadcastNotifyAnUpdate
-
     private var _binding : FragmentBookmarkedMoviesBinding? = null
     private val binding get() = _binding!!
 
@@ -102,28 +99,27 @@ class BookmarkedMoviesFragment : Fragment(), MovieClicked, BroadcastNotifyAnUpda
 
     private fun initializeRecyclerView(){
         binding.recyclerViewBookmarkedFragment.layoutManager= LinearLayoutManager(context)
-        bookmarkedMoviesList= mutableListOf()
+      //  bookmarkedMoviesList= mutableListOf()
     }
 
     private fun updateBookmarkList(){
         databaseViewModel.getAllMovies().observe(viewLifecycleOwner, Observer {listOfMovies ->
             bookmarkedMoviesList.clear()
             bookmarkedMoviesList.addAll(listOfMovies)
-        })
-
-        if(bookmarkedMoviesList.isEmpty()){
-            binding.recyclerViewBookmarkedFragment.visibility=View.GONE
-            binding.emptyTextBookmarkedFragment.visibility=View.VISIBLE
-        }
-
-        else {
-            if(context != null) {
-                binding.recyclerViewBookmarkedFragment.visibility = View.VISIBLE
-                binding.emptyTextBookmarkedFragment.visibility = View.GONE
-                myCustomAdapter = MovieAdapter(this@BookmarkedMoviesFragment, requireContext(), bookmarkedMoviesList)
-                binding.recyclerViewBookmarkedFragment.adapter = myCustomAdapter
+            if(bookmarkedMoviesList.isEmpty()){
+                binding.recyclerViewBookmarkedFragment.visibility=View.GONE
+                binding.emptyTextBookmarkedFragment.visibility=View.VISIBLE
             }
-        }
+
+            else {
+                if(context != null) {
+                    binding.recyclerViewBookmarkedFragment.visibility = View.VISIBLE
+                    binding.emptyTextBookmarkedFragment.visibility = View.GONE
+                    myCustomAdapter = MovieAdapter(this@BookmarkedMoviesFragment, requireContext(), bookmarkedMoviesList)
+                    binding.recyclerViewBookmarkedFragment.adapter = myCustomAdapter
+                }
+            }
+        })
     }
 
    /* private fun updateBookmarkList(){
