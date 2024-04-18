@@ -4,6 +4,7 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.example.task1.database.DatabaseHandler
@@ -22,22 +23,19 @@ class RoomViewModel(application : Application) : AndroidViewModel(application){
         allData = repo.getAllMovies()
     }
 
-    fun getAllMovies()  : LiveData<List<Movie>>{
+   /* fun getAllMovies()  : LiveData<List<Movie>>{
         return repo.getAllMovies()
-    }
+    }*/
 
     fun addMovie(movie : Movie){
         viewModelScope.launch(Dispatchers.IO ) {
             repo.addMovie(movie)
         }
-        Log.d("Movie added ---->","Movie added ----> ${movie.name}")
     }
 
     fun deleteMovie(id : Int){
+        viewModelScope.launch(Dispatchers.IO) {
             repo.removeMovie(id)
+        }
     }
-
-
-
-
 }

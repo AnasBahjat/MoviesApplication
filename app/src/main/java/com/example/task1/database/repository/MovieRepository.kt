@@ -16,7 +16,11 @@ class MovieRepository(private val movieDao : MovieDao) {
         Log.d("Movie added ---->","Movie added ----> ${movie.name} 2222")
     }
 
-    fun removeMovie(id : Int){
+    suspend fun removeMovie(id : Int){
         movieDao.deleteMovieFromBookmarked(id)
+    }
+
+    suspend fun deleteMovie(movie: Movie) {
+        movieDao.deleteMovie(movie)
     }
 }

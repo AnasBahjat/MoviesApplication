@@ -29,12 +29,9 @@ import kotlinx.coroutines.withContext
 
 class MovieActivity : AppCompatActivity() {
 
-   // private lateinit var sharedPreferences : SharedPrefManager
     private lateinit var binding : ActivityMovieBinding
     private lateinit var databaseViewModel: RoomViewModel
-    private val allSavedMovies = mutableListOf<Movie>()
     private var movie : Movie? = null
-    private  var savedFlag : Boolean = false
     private var id : Int = -1
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,37 +48,22 @@ class MovieActivity : AppCompatActivity() {
     }
 
     private fun wrapViews(){
-       // sharedPreferences= SharedPrefManager(this)
         initialize()
-
-
-
-
-       /* if(sharedPreferences.getMovieSavedStatus(id) == 0){
-            binding.bookmarkDis.setImageResource(R.drawable.bookmark_disabled)
-        }
-
-        else {
-            binding.bookmarkDis.setImageResource(R.drawable.filled_bookmark)
-        }*/
-
-
         binding.bookmarkDis.setOnClickListener {
             checkIfMovieSaved(id) {saved ->
-                binding.bookmarkDis.post{
                     if(!saved){
                         binding.bookmarkDis.setImageResource(R.drawable.filled_bookmark)
                         databaseViewModel.addMovie(movie!!)
+                        Log.d("00000000000000000","000000000000000000")
                     }
                     else {
                         binding.bookmarkDis.setImageResource(R.drawable.bookmark_disabled)
-                        // sharedPreferences.removeIdFromList(id)
                         databaseViewModel.deleteMovie(id)
                         val deleteIntent = Intent(Constants.DELETE_MOVIE_ACTION)
                         deleteIntent.putExtra(Constants.ID_TO_SAVE, id)
                         sendBroadcast(deleteIntent)
+                        Log.d("111111111111111111111","111111111111111111111")
                     }
-                }
             }
         }
 
@@ -96,6 +78,11 @@ class MovieActivity : AppCompatActivity() {
     }
 
     private fun setMovieSavedImage(){
+        getMovie()
+        setSaveImage()
+    }
+
+    private fun getMovie(){
         movie = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             intent.getParcelableExtra(Constants.MOVIE_KEY, Movie::class.java)
         }
@@ -103,11 +90,13 @@ class MovieActivity : AppCompatActivity() {
             intent.getParcelableExtra(Constants.MOVIE_KEY)
         }
         wrapDataToViews(movie)
-        checkIfMovieSaved(id){isSaved ->
-            if(!isSaved){
+    }
+
+    private fun setSaveImage(){
+        checkIfMovieSaved(id) { isSaved ->
+            if (!isSaved) {
                 binding.bookmarkDis.setImageResource(R.drawable.bookmark_disabled)
-            }
-            else {
+            } else {
                 binding.bookmarkDis.setImageResource(R.drawable.filled_bookmark)
             }
         }
@@ -116,13 +105,16 @@ class MovieActivity : AppCompatActivity() {
 
 
     private fun checkIfMovieSaved(idToCheck : Int,callback: (Boolean) -> Unit){
-        databaseViewModel.viewModelScope.launch(Dispatchers.IO){
-            val flag = withContext(Dispatchers.IO) {
-                databaseViewModel.getAllMovies().value?.any { it.id == idToCheck } ?: false
+        var flag = false
+        databaseViewModel.allData.observe(this,Observer{savedMovies ->
+            for(movie in savedMovies){
+                Log.d("The movie id is -> ${movie.id}","The movie id is -> ${movie.id}")
+                if(movie.id == idToCheck){
+                    flag = true
+                }
             }
-                callback(flag)
-            }
-
+            callback(flag)
+        })
     }
 
     private fun initializeViewModel(){

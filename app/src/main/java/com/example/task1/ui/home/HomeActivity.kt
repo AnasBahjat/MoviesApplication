@@ -52,7 +52,7 @@ class HomeActivity : AppCompatActivity() {
         binding.bottomNav.setOnItemSelectedListener {
             when(it.itemId){
                 R.id.homeMovies -> {
-                    loadFragment(HomeFragment())
+                    fetchMovies()
                     true}
                 R.id.bookmarkMovies ->{
                     loadFragment(BookmarkedMoviesFragment())

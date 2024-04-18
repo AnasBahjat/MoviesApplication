@@ -70,11 +70,6 @@ class BookmarkedMoviesFragment : Fragment(), MovieClicked, BroadcastNotifyAnUpda
         databaseViewModel = ViewModelProvider(this)[RoomViewModel::class.java]
     }
 
-   /* private fun initializeSharedPreferences(){
-        if(context != null){
-            sharedPreferences = SharedPrefManager(requireContext())
-        }
-    }*/
 
     private fun setMoviesListValue(){
         moviesList = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
@@ -103,7 +98,7 @@ class BookmarkedMoviesFragment : Fragment(), MovieClicked, BroadcastNotifyAnUpda
     }
 
     private fun updateBookmarkList(){
-        databaseViewModel.getAllMovies().observe(viewLifecycleOwner, Observer {listOfMovies ->
+        databaseViewModel.allData.observe(viewLifecycleOwner, Observer {listOfMovies ->
             bookmarkedMoviesList.clear()
             bookmarkedMoviesList.addAll(listOfMovies)
             if(bookmarkedMoviesList.isEmpty()){
@@ -121,49 +116,6 @@ class BookmarkedMoviesFragment : Fragment(), MovieClicked, BroadcastNotifyAnUpda
             }
         })
     }
-
-   /* private fun updateBookmarkList(){
-        bookmarkedMoviesList = mutableListOf()
-
-
-        val moviesIDs=sharedPreferences.getIdsList()
-
-        for(id in moviesIDs){
-            val movie = getMovieData(id)
-            if (movie != null) {
-                bookmarkedMoviesList.add(movie)
-            }
-        }
-
-        if(bookmarkedMoviesList.isEmpty()){
-            binding.recyclerViewBookmarkedFragment.visibility=View.GONE
-            binding.emptyTextBookmarkedFragment.visibility=View.VISIBLE
-        }
-
-        else {
-            if(context != null) {
-                binding.recyclerViewBookmarkedFragment.visibility = View.VISIBLE
-                binding.emptyTextBookmarkedFragment.visibility = View.GONE
-                myCustomAdapter = MovieAdapter(this@BookmarkedMoviesFragment, requireContext(), bookmarkedMoviesList)
-                binding.recyclerViewBookmarkedFragment.adapter = myCustomAdapter
-            }
-        }
-    }*/
-
-
-  /*  private fun getMovieData(id : Int) : Movie?{
-        var bookmarkedMovie: Movie? = null
-        moviesList?.let{moviesList->
-            for (movie in moviesList){
-                if(movie.id == id){
-                    bookmarkedMovie=movie
-                    break
-                }
-            }
-        }
-        return bookmarkedMovie
-    }*/
-
 
     override fun onMovieClicked(movieData: Movie) {
         val intent = Intent(context, MovieActivity::class.java)
@@ -192,7 +144,7 @@ class BookmarkedMoviesFragment : Fragment(), MovieClicked, BroadcastNotifyAnUpda
     }*/
 
     override fun onBroadcastReceived(id : Int) {
-      //  deleteMovie(id)
+        databaseViewModel.deleteMovie(id)
         updateBookmarkList()
     }
 
