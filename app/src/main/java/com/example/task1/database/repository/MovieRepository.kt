@@ -8,12 +8,10 @@ import com.example.task1.model.Movie
 class MovieRepository(private val movieDao : MovieDao) {
 
     fun getAllMovies(): LiveData<List<Movie>> {
-        Log.d("the data ----> ${movieDao.getAllMovies().value}","the data ----> ${movieDao.getAllMovies().value}")
         return movieDao.getAllMovies()
     }
     suspend fun addMovie(movie : Movie){
         movieDao.addNewMovieToBookmarked(movie)
-        Log.d("Movie added ---->","Movie added ----> ${movie.name} 2222")
     }
 
     suspend fun removeMovie(id : Int){
@@ -23,4 +21,11 @@ class MovieRepository(private val movieDao : MovieDao) {
     suspend fun deleteMovie(movie: Movie) {
         movieDao.deleteMovie(movie)
     }
+
+    suspend fun searchForMovie(id : Int) : List<Movie> {
+        return movieDao.searchForMovieById(id)
+    }
+
+
+
 }

@@ -22,4 +22,8 @@ interface MovieDao {
     @Delete
     suspend fun deleteMovie(movie : Movie)
 
+    // add new function to return a movie that have $id..
+    @Query("SELECT * FROM Movie where id =:id")
+    suspend fun searchForMovieById(id : Int) : List<Movie>
+    
 }

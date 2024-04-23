@@ -20,6 +20,8 @@ import com.bumptech.glide.Glide
 import com.example.task1.utils.Constants
 import com.example.task1.model.Movie
 import com.example.task1.R
+import com.example.task1.database.MovieDao
+import com.example.task1.database.repository.MovieRepository
 import com.example.task1.utils.SharedPrefManager
 import com.example.task1.databinding.ActivityMovieBinding
 import com.example.task1.ui.home.viewModels.RoomViewModel
@@ -51,10 +53,9 @@ class MovieActivity : AppCompatActivity() {
         initialize()
         binding.bookmarkDis.setOnClickListener {
             checkIfMovieSaved(id) {saved ->
-                    if(!saved){
+                    if(saved){
                         binding.bookmarkDis.setImageResource(R.drawable.filled_bookmark)
                         databaseViewModel.addMovie(movie!!)
-                        Log.d("00000000000000000","000000000000000000")
                     }
                     else {
                         binding.bookmarkDis.setImageResource(R.drawable.bookmark_disabled)
@@ -62,7 +63,6 @@ class MovieActivity : AppCompatActivity() {
                         val deleteIntent = Intent(Constants.DELETE_MOVIE_ACTION)
                         deleteIntent.putExtra(Constants.ID_TO_SAVE, id)
                         sendBroadcast(deleteIntent)
-                        Log.d("111111111111111111111","111111111111111111111")
                     }
             }
         }
@@ -79,6 +79,7 @@ class MovieActivity : AppCompatActivity() {
 
     private fun setMovieSavedImage(){
         getMovie()
+
         setSaveImage()
     }
 
@@ -93,8 +94,9 @@ class MovieActivity : AppCompatActivity() {
     }
 
     private fun setSaveImage(){
+
         checkIfMovieSaved(id) { isSaved ->
-            if (!isSaved) {
+            if (isSaved) {
                 binding.bookmarkDis.setImageResource(R.drawable.bookmark_disabled)
             } else {
                 binding.bookmarkDis.setImageResource(R.drawable.filled_bookmark)
@@ -104,17 +106,11 @@ class MovieActivity : AppCompatActivity() {
 
 
 
+
     private fun checkIfMovieSaved(idToCheck : Int,callback: (Boolean) -> Unit){
-        var flag = false
-        databaseViewModel.allData.observe(this,Observer{savedMovies ->
-            for(movie in savedMovies){
-                Log.d("The movie id is -> ${movie.id}","The movie id is -> ${movie.id}")
-                if(movie.id == idToCheck){
-                    flag = true
-                }
-            }
-            callback(flag)
-        })
+        databaseViewModel.searchForMovieById(idToCheck) { searchedMovies ->
+            callback(searchedMovies.isEmpty())
+        }
     }
 
     private fun initializeViewModel(){

@@ -16,17 +16,13 @@ import kotlinx.coroutines.launch
 class RoomViewModel(application : Application) : AndroidViewModel(application){
   //  private lateinit var getAllMovies : LiveData<List<Movie>>
     val allData : LiveData<List<Movie>>
+    private  var movieSearched : List<Movie> = listOf()
     private val repo : MovieRepository
     init {
         val movieDao = DatabaseHandler.getDatabase(application).movieDao()
         repo = MovieRepository(movieDao)
         allData = repo.getAllMovies()
     }
-
-   /* fun getAllMovies()  : LiveData<List<Movie>>{
-        return repo.getAllMovies()
-    }*/
-
     fun addMovie(movie : Movie){
         viewModelScope.launch(Dispatchers.IO ) {
             repo.addMovie(movie)
@@ -36,6 +32,13 @@ class RoomViewModel(application : Application) : AndroidViewModel(application){
     fun deleteMovie(id : Int){
         viewModelScope.launch(Dispatchers.IO) {
             repo.removeMovie(id)
+        }
+    }
+
+    fun searchForMovieById(id: Int, callback: (List<Movie>) -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val searchedMovies = repo.searchForMovie(id)
+            callback(searchedMovies)
         }
     }
 }

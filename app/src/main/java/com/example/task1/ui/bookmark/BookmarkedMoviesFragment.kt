@@ -124,25 +124,6 @@ class BookmarkedMoviesFragment : Fragment(), MovieClicked, BroadcastNotifyAnUpda
     }
 
 
-   /* private fun deleteMovie(id : Int){
-        val movieToDelete=getMovieData(id)
-
-        if (bookmarkedMoviesList.isNotEmpty()) {
-            bookmarkedMoviesList.remove(movieToDelete)
-        }
-
-        if(bookmarkedMoviesList.isEmpty()){
-            binding.recyclerViewBookmarkedFragment.visibility=View.GONE
-            binding.emptyTextBookmarkedFragment.visibility=View.VISIBLE
-        }
-        else {
-            binding.recyclerViewBookmarkedFragment.visibility = View.VISIBLE
-            binding.emptyTextBookmarkedFragment.visibility = View.GONE
-            myCustomAdapter = MovieAdapter(this@BookmarkedMoviesFragment, requireContext(), bookmarkedMoviesList)
-            binding.recyclerViewBookmarkedFragment.adapter = myCustomAdapter
-        }
-    }*/
-
     override fun onBroadcastReceived(id : Int) {
         databaseViewModel.deleteMovie(id)
         updateBookmarkList()
